@@ -4,12 +4,12 @@ import React, {
   useCallback,
   useEffect
 } from 'react';
-import { listEmails, getEmail } from '../api/api';
+import { listEmails, getEmail, disconnectService } from '../api/api';
 
 export const AppContext = createContext();
 
 export function AppProvider({ children }) {
-  const account = 'peter';
+  const account = 'workeasy';
   const [emails, setEmails]             = useState([]);
   const [isLoading, setLoading]         = useState(false);
   const [error, setError]               = useState(null);
@@ -53,6 +53,17 @@ export function AppProvider({ children }) {
     fetchEmails();
   };
 
+  const disconnectGmail = useCallback(async () => {
+  try {
+    await disconnectService('gmail', account);
+  } catch (err) {
+    console.error('Failed to disconnect Gmail:', err);
+  } finally {
+    setEmails([]);           // clear out old messages
+    setAuthRequired(true);   // show Connect button again
+  }
+  }, [account]);
+
   return (
     <AppContext.Provider value={{
       account,
@@ -61,6 +72,7 @@ export function AppProvider({ children }) {
       error,
       authRequired,
       fetchEmails,
+      disconnectGmail,
       handleAuthSuccess
     }}>
       {children}

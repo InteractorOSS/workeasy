@@ -1,4 +1,4 @@
-import React, { useContext, useEffect} from 'react';
+import React, { useContext, useEffect } from 'react';
 import { AppProvider, AppContext } from './context/AppContext';
 import AuthButton from './components/AuthButton';
 import EmailList  from './components/EmailList';
@@ -11,7 +11,8 @@ function InnerApp() {
     error,
     authRequired,
     fetchEmails,
-    handleAuthSuccess
+    handleAuthSuccess,
+    disconnectGmail
   } = useContext(AppContext);
 
   // kick off initial load
@@ -43,10 +44,24 @@ function InnerApp() {
   }
 
   if (emails.length === 0) {
-    return <button onClick={fetchEmails}>Fetch Email</button>;
+    return (
+      <button onClick={fetchEmails}>
+        Fetch Emails
+      </button>
+    );
   }
 
-  return <EmailList />;
+  return (
+    <div>
+      <EmailList />
+      <button
+        style={{ marginTop: '1rem' }}
+        onClick={disconnectGmail}
+      >
+        Disconnect Gmail
+      </button>
+    </div>
+  );
 }
 
 export default function App() {

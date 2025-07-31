@@ -57,6 +57,27 @@ const proxyConnector = (service) => async (req, res) => {
   }
 };
 
+// ─── Disconnect / Revoke Gmail tokens ────────────────────────────────────────
+app.delete('/connector/:service/credential', async (req, res) => {
+  const { service } = req.params;
+  const account     = req.query.account;
+
+  if (service !== 'gmail') {
+    return res.status(400).json({ error: 'Invalid service.' });
+  }
+
+  try {
+    await axios.delete(
+      `${process.env.INTERACTOR_ENDPOINT}connector/interactor/${service}/credential?account=${encodeURIComponent(account)}`,
+      { headers: { 'x-api-key': process.env.INTERACTOR_API_KEY } }
+    );
+    return res.json({ success: true });
+  } catch (err) {
+    console.error('Disconnect Gmail failed:', err.response?.data || err.message);
+    return res.status(502).json({ error: 'Failed to revoke Gmail credentials.' });
+  }
+});
+
 app.post('/connector/gmail/email.list', proxyConnector('gmail'));
 app.post('/connector/gmail/email.get',  proxyConnector('gmail'));
 

@@ -49,3 +49,14 @@ export async function getAuthUrl(service, account) {
   );
   return res.data.authUrl;
 }
+
+/**
+ * Revoke the OAuth credential for a given service/account.
+ */
+export async function disconnectService(service, account) {
+  const res = await httpClient.delete(
+    `/connector/${service}/credential`,
+    { params: { account } }
+  );
+  return res.data;
+}
